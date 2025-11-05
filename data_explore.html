@@ -84,6 +84,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#structure" id="toc-structure" class="nav-link" data-scroll-target="#structure">Structure</a></li>
   <li><a href="#categorical-summaries" id="toc-categorical-summaries" class="nav-link" data-scroll-target="#categorical-summaries">Categorical Summaries</a></li>
   <li><a href="#numeric-summaries-by-group" id="toc-numeric-summaries-by-group" class="nav-link" data-scroll-target="#numeric-summaries-by-group">Numeric Summaries by Group</a></li>
+  <li><a href="#plots-6-total-4-multivariate-1-faceted-1-novel" id="toc-plots-6-total-4-multivariate-1-faceted-1-novel" class="nav-link" data-scroll-target="#plots-6-total-4-multivariate-1-faceted-1-novel">Plots (≥6 total; ≥4 multivariate; ≥1 faceted; ≥1 novel)</a></li>
   </ul>
 </nav>
 </div>
@@ -142,7 +143,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">seasons =</span> <span class="fu">as.factor</span>(seasons),</span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">holiday =</span> <span class="fu">as.factor</span>(holiday),</span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">functioning_day =</span> <span class="fu">as.factor</span>(functioning_day)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># --- STANDARDIZE &amp; NUMERIC COERCION (add this AFTER mutate) --------------------</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Some Kaggle copies have "humidity_" after clean_names(); rename if needed.</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="st">"humidity_"</span> <span class="sc">%in%</span> <span class="fu">names</span>(df) <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="st">"humidity"</span> <span class="sc">%in%</span> <span class="fu">names</span>(df)) {</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">rename</span>(df, <span class="at">humidity =</span> humidity_)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Force key numerics to numeric (in case readr guessed character for any)</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>num_cols <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rented_bike_count"</span>,<span class="st">"temperature_c"</span>,<span class="st">"humidity"</span>,<span class="st">"wind_speed_m_s"</span>,</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">"visibility_10m"</span>,<span class="st">"dew_point_temperature_c"</span>,<span class="st">"solar_radiation_mj_m2"</span>,</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rainfall_mm"</span>,<span class="st">"snowfall_cm"</span>,<span class="st">"hour"</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(<span class="fu">intersect</span>(<span class="fu">names</span>(df), num_cols)),</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>                <span class="sc">~</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.numeric</span>(.))))</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Find &amp; standardize humidity column ---------------------------------------</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Look for any column that starts with "humidity" after clean_names()</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>hum_col <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">first</span>(<span class="fu">names</span>(df)[<span class="fu">grepl</span>(<span class="st">"^humidity"</span>, <span class="fu">names</span>(df))])</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">is.na</span>(hum_col)) {</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Helpful diagnostic so you can see what's available</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">names</span>(df))</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"No humidity-like column found. Check the printed names and update the pattern."</span>)</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a consistent numeric column for plotting</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">humidity_std =</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.numeric</span>(.data[[hum_col]])))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -155,7 +185,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 8,760
-Columns: 14
+Columns: 15
 $ date                    &lt;date&gt; 2017-12-01, 2017-12-01, 2017-12-01, 2017-12-0…
 $ rented_bike_count       &lt;dbl&gt; 254, 204, 173, 107, 78, 100, 181, 460, 930, 49…
 $ hour                    &lt;dbl&gt; 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, …
@@ -169,7 +199,8 @@ $ rainfall_mm             &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 $ snowfall_cm             &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
 $ seasons                 &lt;fct&gt; Winter, Winter, Winter, Winter, Winter, Winter…
 $ holiday                 &lt;fct&gt; No Holiday, No Holiday, No Holiday, No Holiday…
-$ functioning_day         &lt;fct&gt; Yes, Yes, Yes, Yes, Yes, Yes, Yes, Yes, Yes, Y…</code></pre>
+$ functioning_day         &lt;fct&gt; Yes, Yes, Yes, Yes, Yes, Yes, Yes, Yes, Yes, Y…
+$ humidity_std            &lt;dbl&gt; 37, 38, 39, 40, 36, 37, 35, 38, 37, 27, 24, 21…</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -197,13 +228,13 @@ $ functioning_day         &lt;fct&gt; Yes, Yes, Yes, Yes, Yes, Yes, Yes, Yes, Ye
  Mean   :0.5691        Mean   : 0.1487   Mean   :0.07507   Winter:2160  
  3rd Qu.:0.9300        3rd Qu.: 0.0000   3rd Qu.:0.00000                
  Max.   :3.5200        Max.   :35.0000   Max.   :8.80000                
-       holiday     functioning_day
- Holiday   : 432   No : 295       
- No Holiday:8328   Yes:8465       
-                                  
-                                  
-                                  
-                                  </code></pre>
+       holiday     functioning_day  humidity_std  
+ Holiday   : 432   No : 295        Min.   : 0.00  
+ No Holiday:8328   Yes:8465        1st Qu.:42.00  
+                                   Median :57.00  
+                                   Mean   :58.23  
+                                   3rd Qu.:74.00  
+                                   Max.   :98.00  </code></pre>
 </div>
 </div>
 </section>
@@ -278,6 +309,134 @@ $ functioning_day         &lt;fct&gt; Yes, Yes, Yes, Yes, Yes, Yes, Yes, Yes, Ye
 4 Winter   2160  226.  150.   203      3   937</code></pre>
 </div>
 </div>
+</section>
+<section id="plots-6-total-4-multivariate-1-faceted-1-novel" class="level2">
+<h2 class="anchored" data-anchor-id="plots-6-total-4-multivariate-1-faceted-1-novel">Plots (≥6 total; ≥4 multivariate; ≥1 faceted; ≥1 novel)</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Safety: make sure ggplot2 is attached for the plot chunks below</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="st">"package:ggplot2"</span> <span class="sc">%in%</span> <span class="fu">search</span>()) {</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(ggplot2)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="scatter-temperature-vs-rentals-multivariate-color-seasons" class="level3">
+<h3 class="anchored" data-anchor-id="scatter-temperature-vs-rentals-multivariate-color-seasons">1) Scatter — Temperature vs Rentals (multivariate: color = seasons)</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> temperature_c, <span class="at">y =</span> rented_bike_count, <span class="at">color =</span> seasons)) <span class="sc">+</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Rentals vs Temperature by Season"</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Temperature (°C)"</span>, <span class="at">y =</span> <span class="st">"Rented Bike Count"</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Season"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_explore_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="boxplot--rentals-by-season-multivariate" class="level3">
+<h3 class="anchored" data-anchor-id="boxplot--rentals-by-season-multivariate">2) Boxplot- Rentals by Season (Multivariate)</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> seasons, <span class="at">y =</span> rented_bike_count, <span class="at">fill =</span> seasons)) <span class="sc">+</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_boxplot</span>(<span class="at">outlier.alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Rented Bike Count by Season"</span>, <span class="at">x =</span> <span class="st">"Season"</span>, <span class="at">y =</span> <span class="st">"Rented Bike Count"</span>, <span class="at">fill =</span> <span class="st">"Season"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_explore_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="histogram--rentals-faceted-by-functioning-day-faceted" class="level3">
+<h3 class="anchored" data-anchor-id="histogram--rentals-faceted-by-functioning-day-faceted">3) Histogram- Rentals faceted by Functioning Day (FACETED)</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> rented_bike_count)) <span class="sc">+</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">facet_wrap</span>(<span class="fu">vars</span>(functioning_day)) <span class="sc">+</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution of Rentals (Faceted by Functioning Day)"</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="at">x =</span> <span class="st">"Rented Bike Count"</span>, <span class="at">y =</span> <span class="st">"Frequency"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_explore_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="mean-bar--mean-rentals-by-holiday-multivariate-via-fill" class="level3">
+<h3 class="anchored" data-anchor-id="mean-bar--mean-rentals-by-holiday-multivariate-via-fill">4) Mean Bar- Mean Rentals by Holiday (Multivariate via Fill)</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">group_by</span>(holiday) <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summarise</span>(<span class="at">mean_rentals =</span> <span class="fu">mean</span>(rented_bike_count, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> holiday, <span class="at">y =</span> mean_rentals, <span class="at">fill =</span> holiday)) <span class="sc">+</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Mean Rented Bike Count by Holiday"</span>, <span class="at">x =</span> <span class="st">"Holiday"</span>, <span class="at">y =</span> <span class="st">"Mean Rentals"</span>, <span class="at">fill =</span> <span class="st">"Holiday"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_explore_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="denisty--temperature-by-season-multivariate-via-color" class="level3">
+<h3 class="anchored" data-anchor-id="denisty--temperature-by-season-multivariate-via-color">5) Denisty- Temperature by Season (Multivariate via color)</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> temperature_c, <span class="at">color =</span> seasons)) <span class="sc">+</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Temperature Density by Season"</span>, <span class="at">x =</span> <span class="st">"Temperature (°C)"</span>, <span class="at">y =</span> <span class="st">"Density"</span>, <span class="at">color =</span> <span class="st">"Season"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_explore_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="novel--2d-density-heatmap-temperature-vs-humidity" class="level3">
+<h3 class="anchored" data-anchor-id="novel--2d-density-heatmap-temperature-vs-humidity">6) Novel- 2D density heatmap (temperature vs Humidity)</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> temperature_c, <span class="at">y =</span> humidity_std)) <span class="sc">+</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_bin2d</span>(<span class="at">bins =</span> <span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"2D Density Heatmap: Temperature vs Humidity"</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Temperature (°C)"</span>, <span class="at">y =</span> <span class="st">"Humidity (%)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_explore_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
 </section>
 
 </main>

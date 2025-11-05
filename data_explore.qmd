@@ -48,6 +48,36 @@ df <- df %>%
     holiday = as.factor(holiday),
     functioning_day = as.factor(functioning_day)
   )
+# --- STANDARDIZE & NUMERIC COERCION (add this AFTER mutate) --------------------
+# Some Kaggle copies have "humidity_" after clean_names(); rename if needed.
+if ("humidity_" %in% names(df) && !"humidity" %in% names(df)) {
+  df <- dplyr::rename(df, humidity = humidity_)
+}
+
+# Force key numerics to numeric (in case readr guessed character for any)
+num_cols <- c(
+  "rented_bike_count","temperature_c","humidity","wind_speed_m_s",
+  "visibility_10m","dew_point_temperature_c","solar_radiation_mj_m2",
+  "rainfall_mm","snowfall_cm","hour"
+)
+df <- df %>%
+  mutate(across(all_of(intersect(names(df), num_cols)),
+                ~ suppressWarnings(as.numeric(.))))
+
+# --- Find & standardize humidity column ---------------------------------------
+# Look for any column that starts with "humidity" after clean_names()
+hum_col <- dplyr::first(names(df)[grepl("^humidity", names(df))])
+
+if (is.na(hum_col)) {
+  # Helpful diagnostic so you can see what's available
+  print(names(df))
+  stop("No humidity-like column found. Check the printed names and update the pattern.")
+}
+
+# Create a consistent numeric column for plotting
+df <- df %>%
+  mutate(humidity_std = suppressWarnings(as.numeric(.data[[hum_col]])))
+
 ```
 
 ## Structure
@@ -98,4 +128,65 @@ df %>%
   )
 
 ```
+
+## Plots (≥6 total; ≥4 multivariate; ≥1 faceted; ≥1 novel)
+
+```{r}
+# Safety: make sure ggplot2 is attached for the plot chunks below
+if (!"package:ggplot2" %in% search()) {
+  library(ggplot2)
+}
+```
+
+### 1) Scatter — Temperature vs Rentals (multivariate: color = seasons)
+```{r}
+ggplot(df, aes(x = temperature_c, y = rented_bike_count, color = seasons)) +
+  geom_point(alpha = 0.6) +
+  labs(title = "Rentals vs Temperature by Season",
+       x = "Temperature (°C)", y = "Rented Bike Count",
+       color = "Season")
+```
+
+### 2) Boxplot- Rentals by Season (Multivariate)
+```{r}
+ggplot(df, aes(x = seasons, y = rented_bike_count, fill = seasons)) +
+geom_boxplot(outlier.alpha = 0.4) +
+labs(title = "Rented Bike Count by Season", x = "Season", y = "Rented Bike Count", fill = "Season")
+```
+
+### 3) Histogram- Rentals faceted by Functioning Day (FACETED)
+```{r}
+ggplot(df, aes(x = rented_bike_count)) +
+geom_histogram(bins = 30) +
+facet_wrap(vars(functioning_day)) +
+labs(title = "Distribution of Rentals (Faceted by Functioning Day)",
+x = "Rented Bike Count", y = "Frequency")
+```
+
+### 4) Mean Bar- Mean Rentals by Holiday (Multivariate via Fill)
+```{r}
+df %>%
+group_by(holiday) %>%
+summarise(mean_rentals = mean(rented_bike_count, na.rm = TRUE)) %>%
+ggplot(aes(x = holiday, y = mean_rentals, fill = holiday)) +
+geom_col() +
+labs(title = "Mean Rented Bike Count by Holiday", x = "Holiday", y = "Mean Rentals", fill = "Holiday")
+```
+
+### 5) Denisty- Temperature by Season (Multivariate via color)
+```{r}
+ggplot(df, aes(x = temperature_c, color = seasons)) +
+geom_density() +
+labs(title = "Temperature Density by Season", x = "Temperature (°C)", y = "Density", color = "Season")
+```
+
+### 6) Novel- 2D density heatmap (temperature vs Humidity)
+```{r}
+ggplot(df, aes(x = temperature_c, y = humidity_std)) +
+  stat_bin2d(bins = 30) +
+  labs(title = "2D Density Heatmap: Temperature vs Humidity",
+       x = "Temperature (°C)", y = "Humidity (%)")
+
+```
+
 
