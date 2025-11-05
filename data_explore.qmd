@@ -56,3 +56,26 @@ df <- df %>%
 glimpse(df)
 summary(df)
 ```
+
+## Categorical Summaries
+
+### One-way table
+We show counts by a single categorical variable (default: `seasons`).
+Cross-tabulation of seasons × functioning_day, with row/column totals.
+```{r}
+one_way_var <- "seasons"
+df %>%
+  count(.data[[one_way_var]]) %>%
+  arrange(desc(n)) %>%
+  janitor::adorn_totals(name = "Total")
+
+df %>%
+count(seasons, functioning_day) %>%
+tidyr::pivot_wider(names_from = functioning_day,
+values_from = n, values_fill = 0) %>%
+janitor::adorn_totals(where = c("row","col"))
+
+
+```
+
+
