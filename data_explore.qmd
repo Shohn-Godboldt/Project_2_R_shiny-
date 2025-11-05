@@ -1,0 +1,33 @@
+---
+title: "Static Data Exploration — Seoul Bike (Kaggle)"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: cosmo
+    code-fold: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+```{r}
+library(readr); library(dplyr); library(tidyr); library(ggplot2); library(janitor)
+library(forcats); library(stringr); library(purrr); library(scales)
+
+# Read with UTF-8 locale to avoid "invalid UTF-8" warnings
+
+df <- readr::read_csv(
+  "data/SeoulBikeData.csv",
+  show_col_types = FALSE,
+  locale = readr::locale(encoding = "UTF-8")
+) |> janitor::clean_names()
+
+df <- df %>%
+  mutate(
+    date = suppressWarnings(as.Date(date, format = "%d/%m/%Y")),
+    seasons = as.factor(seasons),
+    holiday = as.factor(holiday),
+    functioning_day = as.factor(functioning_day)
+  )
