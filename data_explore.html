@@ -83,6 +83,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#data-source-variables-short" id="toc-data-source-variables-short" class="nav-link" data-scroll-target="#data-source-variables-short">Data Source &amp; Variables (short)</a></li>
   <li><a href="#structure" id="toc-structure" class="nav-link" data-scroll-target="#structure">Structure</a></li>
   <li><a href="#categorical-summaries" id="toc-categorical-summaries" class="nav-link" data-scroll-target="#categorical-summaries">Categorical Summaries</a></li>
+  <li><a href="#numeric-summaries-by-group" id="toc-numeric-summaries-by-group" class="nav-link" data-scroll-target="#numeric-summaries-by-group">Numeric Summaries by Group</a></li>
   </ul>
 </nav>
 </div>
@@ -210,7 +211,7 @@ $ functioning_day         &lt;fct&gt; Yes, Yes, Yes, Yes, Yes, Yes, Yes, Yes, Ye
 <h2 class="anchored" data-anchor-id="categorical-summaries">Categorical Summaries</h2>
 <section id="one-way-table" class="level3">
 <h3 class="anchored" data-anchor-id="one-way-table">One-way table</h3>
-<p>We show counts by a single categorical variable (default: <code>seasons</code>).</p>
+<p>We show counts by a single categorical variable (default: <code>seasons</code>). Cross-tabulation of seasons × functioning_day, with row/column totals.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -246,6 +247,37 @@ $ functioning_day         &lt;fct&gt; Yes, Yes, Yes, Yes, Yes, Yes, Yes, Yes, Ye
 </div>
 </div>
 </section>
+</section>
+<section id="numeric-summaries-by-group" class="level2">
+<h2 class="anchored" data-anchor-id="numeric-summaries-by-group">Numeric Summaries by Group</h2>
+<p>We summarize the distribution of rented_bike_count within each level of <code>seasons</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>num_summary_var <span class="ot">&lt;-</span> <span class="st">"rented_bike_count"</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>group_var <span class="ot">&lt;-</span> <span class="st">"seasons"</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(.data[[group_var]]) <span class="sc">%&gt;%</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>(),</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean =</span> <span class="fu">mean</span>(.data[[num_summary_var]], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd =</span> <span class="fu">sd</span>(.data[[num_summary_var]], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">median =</span> <span class="fu">median</span>(.data[[num_summary_var]], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">min =</span> <span class="fu">min</span>(.data[[num_summary_var]], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">max =</span> <span class="fu">max</span>(.data[[num_summary_var]], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 7
+  seasons     n  mean    sd median   min   max
+  &lt;fct&gt;   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 Autumn   2184  820.  651.   764.     0  3298
+2 Spring   2208  730.  622.   583      0  3251
+3 Summer   2208 1034.  690.   906.     9  3556
+4 Winter   2160  226.  150.   203      3   937</code></pre>
+</div>
+</div>
 </section>
 
 </main>

@@ -78,4 +78,24 @@ janitor::adorn_totals(where = c("row","col"))
 
 ```
 
+## Numeric Summaries by Group
+
+We summarize the distribution of rented_bike_count within each level of `seasons`.
+
+```{r}
+num_summary_var <- "rented_bike_count"
+group_var <- "seasons"
+df %>%
+  group_by(.data[[group_var]]) %>%
+  summarise(
+    n = n(),
+    mean = mean(.data[[num_summary_var]], na.rm = TRUE),
+    sd = sd(.data[[num_summary_var]], na.rm = TRUE),
+    median = median(.data[[num_summary_var]], na.rm = TRUE),
+    min = min(.data[[num_summary_var]], na.rm = TRUE),
+    max = max(.data[[num_summary_var]], na.rm = TRUE),
+    .groups = "drop"
+  )
+
+```
 
