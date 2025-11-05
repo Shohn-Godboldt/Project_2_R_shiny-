@@ -50,3 +50,9 @@ df <- df %>%
   )
 ```
 
+## Structure
+
+```{r}
+glimpse(df)
+summary(df)
+```
