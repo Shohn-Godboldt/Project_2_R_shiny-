@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -45,7 +79,8 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#read-with-utf-8-locale-to-avoid-invalid-utf-8-warnings" id="toc-read-with-utf-8-locale-to-avoid-invalid-utf-8-warnings" class="nav-link active" data-scroll-target="#read-with-utf-8-locale-to-avoid-invalid-utf-8-warnings">Read with UTF-8 locale to avoid “invalid UTF-8” warnings</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#data-source-variables-short" id="toc-data-source-variables-short" class="nav-link" data-scroll-target="#data-source-variables-short">Data Source &amp; Variables (short)</a></li>
   </ul>
 </nav>
 </div>
@@ -70,11 +105,43 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>library(readr); library(dplyr); library(tidyr); library(ggplot2); library(janitor) library(forcats); library(stringr); library(purrr); library(scales)</p>
-<section id="read-with-utf-8-locale-to-avoid-invalid-utf-8-warnings" class="level1">
-<h1>Read with UTF-8 locale to avoid “invalid UTF-8” warnings</h1>
-<p>df &lt;- readr::read_csv( “data/SeoulBikeData.csv”, show_col_types = FALSE, locale = readr::locale(encoding = “UTF-8”) ) |&gt; janitor::clean_names()</p>
-<p>df &lt;- df %&gt;% mutate( date = suppressWarnings(as.Date(date, format = “%d/%m/%Y”)), seasons = as.factor(seasons), holiday = as.factor(holiday), functioning_day = as.factor(functioning_day) )</p>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>This report provides a static, reproducible exploration of the Seoul Bike Sharing Kaggle dataset. It mirrors the functionality of the Shiny app by showing categorical tables, numeric summaries, and a plot set (≥6 plots, ≥4 multivariate, ≥1 faceted, ≥1 novel).</p>
+<p><strong>Dataset:</strong> <em>Seoul Bike Sharing Demand Prediction</em> (Kaggle).<br>
+<strong>Unit of observation:</strong> hour-level weather/operational records with <code>rented_bike_count</code>.</p>
+</section>
+<section id="data-source-variables-short" class="level2">
+<h2 class="anchored" data-anchor-id="data-source-variables-short">Data Source &amp; Variables (short)</h2>
+<p>Key variables used here:</p>
+<ul>
+<li><strong>Categorical:</strong> <code>seasons</code>, <code>holiday</code>, <code>functioning_day</code></li>
+<li><strong>Numeric:</strong> <code>rented_bike_count</code>, <code>temperature_c</code>, <code>humidity</code>, <code>wind_speed_m_s</code>, <code>visibility_10m</code></li>
+</ul>
+<p>We convert <code>date</code> to Date and coerce the above categoricals to factors for tidy summaries/plots.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr); <span class="fu">library</span>(dplyr); <span class="fu">library</span>(tidyr); <span class="fu">library</span>(ggplot2); <span class="fu">library</span>(janitor)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forcats); <span class="fu">library</span>(stringr); <span class="fu">library</span>(purrr); <span class="fu">library</span>(scales)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Read with UTF-8 locale to avoid "invalid UTF-8" warnings</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/SeoulBikeData.csv"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">locale =</span> readr<span class="sc">::</span><span class="fu">locale</span>(<span class="at">encoding =</span> <span class="st">"UTF-8"</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">date =</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.Date</span>(date, <span class="at">format =</span> <span class="st">"%d/%m/%Y"</span>)),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">seasons =</span> <span class="fu">as.factor</span>(seasons),</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">holiday =</span> <span class="fu">as.factor</span>(holiday),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">functioning_day =</span> <span class="fu">as.factor</span>(functioning_day)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 </section>
 
 </main>

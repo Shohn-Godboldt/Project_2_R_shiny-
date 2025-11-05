@@ -11,6 +11,23 @@ execute:
   warning: false
   message: false
 ---
+## Introduction
+
+This report provides a static, reproducible exploration of the Seoul Bike Sharing Kaggle dataset. 
+It mirrors the functionality of the Shiny app by showing categorical tables, numeric summaries, and 
+a plot set (≥6 plots, ≥4 multivariate, ≥1 faceted, ≥1 novel).
+
+**Dataset:** *Seoul Bike Sharing Demand Prediction* (Kaggle).  
+**Unit of observation:** hour-level weather/operational records with `rented_bike_count`.
+
+## Data Source & Variables (short)
+
+Key variables used here:
+
+- **Categorical:** `seasons`, `holiday`, `functioning_day`
+- **Numeric:** `rented_bike_count`, `temperature_c`, `humidity`, `wind_speed_m_s`, `visibility_10m`
+
+We convert `date` to Date and coerce the above categoricals to factors for tidy summaries/plots.
 
 ```{r}
 library(readr); library(dplyr); library(tidyr); library(ggplot2); library(janitor)
@@ -31,3 +48,5 @@ df <- df %>%
     holiday = as.factor(holiday),
     functioning_day = as.factor(functioning_day)
   )
+```
+
