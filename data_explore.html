@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Shohn Godboldt">
 
 <title>Static Data Exploration — Seoul Bike (Kaggle)</title>
 <style>
@@ -80,11 +81,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul class="collapse">
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
-  <li><a href="#data-source-variables-short" id="toc-data-source-variables-short" class="nav-link" data-scroll-target="#data-source-variables-short">Data Source &amp; Variables (short)</a></li>
+  <li><a href="#data-source-variables" id="toc-data-source-variables" class="nav-link" data-scroll-target="#data-source-variables">Data Source &amp; Variables</a></li>
   <li><a href="#structure" id="toc-structure" class="nav-link" data-scroll-target="#structure">Structure</a></li>
   <li><a href="#categorical-summaries" id="toc-categorical-summaries" class="nav-link" data-scroll-target="#categorical-summaries">Categorical Summaries</a></li>
   <li><a href="#numeric-summaries-by-group" id="toc-numeric-summaries-by-group" class="nav-link" data-scroll-target="#numeric-summaries-by-group">Numeric Summaries by Group</a></li>
   <li><a href="#plots-6-total-4-multivariate-1-faceted-1-novel" id="toc-plots-6-total-4-multivariate-1-faceted-1-novel" class="nav-link" data-scroll-target="#plots-6-total-4-multivariate-1-faceted-1-novel">Plots (≥6 total; ≥4 multivariate; ≥1 faceted; ≥1 novel)</a></li>
+  <li><a href="#brief-findings" id="toc-brief-findings" class="nav-link" data-scroll-target="#brief-findings">Brief Findings</a></li>
+  <li><a href="#reproducibility-notes" id="toc-reproducibility-notes" class="nav-link" data-scroll-target="#reproducibility-notes">Reproducibility Notes</a></li>
   </ul>
 </nav>
 </div>
@@ -99,6 +102,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Shohn Godboldt </p>
+          </div>
+  </div>
     
   
     
@@ -115,8 +124,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Dataset:</strong> <em>Seoul Bike Sharing Demand Prediction</em> (Kaggle).<br>
 <strong>Unit of observation:</strong> hour-level weather/operational records with <code>rented_bike_count</code>.</p>
 </section>
-<section id="data-source-variables-short" class="level2">
-<h2 class="anchored" data-anchor-id="data-source-variables-short">Data Source &amp; Variables (short)</h2>
+<section id="data-source-variables" class="level2">
+<h2 class="anchored" data-anchor-id="data-source-variables">Data Source &amp; Variables</h2>
 <p>Key variables used here:</p>
 <ul>
 <li><strong>Categorical:</strong> <code>seasons</code>, <code>holiday</code>, <code>functioning_day</code></li>
@@ -437,6 +446,33 @@ $ humidity_std            &lt;dbl&gt; 37, 38, 39, 40, 36, 37, 35, 38, 37, 27, 24
 </div>
 </div>
 </section>
+</section>
+<section id="brief-findings" class="level2">
+<h2 class="anchored" data-anchor-id="brief-findings">Brief Findings</h2>
+<p>From the six plots and summary tables above, we can make several observations:</p>
+<ul>
+<li><strong>Temperature and Rentals:</strong> Warmer temperatures generally correspond with higher bike rentals, showing clear seasonal influence.</li>
+<li><strong>Seasonal Trends:</strong> Summer and Autumn show the highest average rentals, while Winter is the lowest.</li>
+<li><strong>Holiday Effect:</strong> Mean rentals are noticeably lower on holidays, indicating reduced commuter activity.</li>
+<li><strong>Functioning Days:</strong> Faceted histograms show that non-functioning days (likely maintenance or closures) drastically reduce rentals.</li>
+<li><strong>Humidity Relationship:</strong> The 2D heatmap shows moderate humidity levels are most common when rentals are high—extreme humidity or dryness correlates with fewer rentals.</li>
+</ul>
+<p>Overall, rentals increase in warmer, clear-weather conditions and decline during colder or less favorable weather or non-functioning periods.</p>
+</section>
+<section id="reproducibility-notes" class="level2">
+<h2 class="anchored" data-anchor-id="reproducibility-notes">Reproducibility Notes</h2>
+<ul>
+<li>Data source: <em>Seoul Bike Sharing Demand Prediction</em> dataset from Kaggle.<br>
+</li>
+<li>Data loaded from <code>data/SeoulBikeData.csv</code> using UTF-8 encoding.<br>
+</li>
+<li>All transformations and visualizations executed in R using the following packages:<br>
+<code>tidyverse</code>, <code>janitor</code>, <code>scales</code>, and <code>ggplot2</code>.<br>
+</li>
+<li>The Quarto document (<code>data_explore.qmd</code>) and Shiny app (<code>app.R</code>) together mirror each other what is seen here in the quarto document can be manipulated in the Shiny app as well.<br>
+</li>
+<li>The full workflow is reproducible on any R environment (≥4.2) with these packages installed.</li>
+</ul>
 </section>
 
 </main>

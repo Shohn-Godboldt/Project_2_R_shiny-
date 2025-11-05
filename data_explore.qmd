@@ -1,5 +1,6 @@
 ---
 title: "Static Data Exploration — Seoul Bike (Kaggle)"
+author: Shohn Godboldt
 format:
   html:
     toc: true
@@ -20,7 +21,7 @@ a plot set (≥6 plots, ≥4 multivariate, ≥1 faceted, ≥1 novel).
 **Dataset:** *Seoul Bike Sharing Demand Prediction* (Kaggle).  
 **Unit of observation:** hour-level weather/operational records with `rented_bike_count`.
 
-## Data Source & Variables (short)
+## Data Source & Variables
 
 Key variables used here:
 
@@ -189,4 +190,24 @@ ggplot(df, aes(x = temperature_c, y = humidity_std)) +
 
 ```
 
+## Brief Findings
+
+From the six plots and summary tables above, we can make several observations:
+
+- **Temperature and Rentals:** Warmer temperatures generally correspond with higher bike rentals, showing clear seasonal influence.
+- **Seasonal Trends:** Summer and Autumn show the highest average rentals, while Winter is the lowest.
+- **Holiday Effect:** Mean rentals are noticeably lower on holidays, indicating reduced commuter activity.
+- **Functioning Days:** Faceted histograms show that non-functioning days (likely maintenance or closures) drastically reduce rentals.
+- **Humidity Relationship:** The 2D heatmap shows moderate humidity levels are most common when rentals are high—extreme humidity or dryness correlates with fewer rentals.
+
+Overall, rentals increase in warmer, clear-weather conditions and decline during colder or less favorable weather or non-functioning periods.
+
+## Reproducibility Notes
+
+- Data source: *Seoul Bike Sharing Demand Prediction* dataset from Kaggle.  
+- Data loaded from `data/SeoulBikeData.csv` using UTF-8 encoding.  
+- All transformations and visualizations executed in R using the following packages:  
+  `tidyverse`, `janitor`, `scales`, and `ggplot2`.  
+- The Quarto document (`data_explore.qmd`) and Shiny app (`app.R`) together mirror each other what is seen here in the quarto document can be manipulated in the Shiny app as well.  
+- The full workflow is reproducible on any R environment (≥4.2) with these packages installed.
 
